@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RAG Research Assistant</title>
+</head>
+
+<body>
+
+<h2>Upload PDF</h2>
+
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="fileInput" name="file" required>
+    <button type="submit">Upload</button>
+</form>
+
+<p id="uploadStatus"></p>
+
+<hr>
+
+<h2>Chat</h2>
+
+<input type="text" id="messageInput" placeholder="Ask something..." />
+<button id="chatBtn">Send</button>
+
+<p id="response"></p>
+
+<script>
+// ----------- UPLOAD BUTTON WORKING CODE -------------
+document.getElementById("uploadForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    let file = document.getElementById("fileInput").files[0];
+    let formData = new FormData();
+    formData.append("file", file);
+
+    let res = await fetch("/upload", {
+        method: "POST",
+        body: formData
+    });
+
+    let data = await res.json();
+    document.getElementById("uploadStatus").innerText = data.message;
+};
+
+// ---------------- CHAT BUTTON WORKING CODE -----------------
+document.getElementById("chatBtn").onclick = async () => {
+    let msg = document.getElementById("messageInput").value;
+
+    let res = await fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: msg })
+    });
+
+    let data = await res.json();
+    document.getElementById("response").innerText = data.reply;
+};
+</script>
+
+</body>
+</html>
